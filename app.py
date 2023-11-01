@@ -22,39 +22,58 @@ MODEL_PATH = 'models/trained_model_CNN_new.h5'
 model = load_model(MODEL_PATH)
 
 #=======================================
+
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def predict_pneumonia():
-    if 'file' not in request.files:
-        return "Aucun fichier n'a été soumis."
-    file = request.files['file']
-    if not file:
-        return "Le fichier n'a pas été soumis."
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return "Aucun fichier n'a été soumis."
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return "Le nom du fichier est vide."
 
-    if file.filename == '':
-        return "Le nom du fichier est vide."
+        if file and allowed_file(file.filename):
+            image_bytes = file.read()
+            image = Image.open(BytesIO(image_bytes))
+            image = image.convert("L")
+            image = image.resize((150, 150))
+            img_array = np.array(image) / 255
+            img_array = img_array.reshape(-1, 150, 150, 1)
+            prediction = model.predict(img_array)
+            is_pneumonia = "Normal" if prediction[0] > 0.5 else "Pneumonie"
+            return render_template('index.html', prediction=is_pneumonia)
 
-    # Read the image from POST data
-    image_bytes = file.read()
-    image = Image.open(BytesIO(image_bytes))
+    return render_template('index.html')
 
-    # Convert the image to grayscale
-    image = image.convert("L")
 
-    # Resize the image
-    image = image.resize((150, 150))
 
-    # Convert the image to a NumPy array
-    img_array = np.array(image) / 255
-    img_array = img_array.reshape(-1, 150, 150, 1)
 
-    # Make a prediction with the model
-    prediction = model.predict(img_array)
-    is_pneumonia = "Normal" if prediction > 0.5 else "Pneumonie"
-    return render_template('index.html', prediction=is_pneumonia)
+
+# @app.route('/', methods=['POST'])
+# def predict_pneumonia():
+#     if 'file' not in request.files:
+#         return "Aucun fichier n'a été soumis."
+#     file = request.files['file']
+#     if not file:
+#         return "Le fichier n'a pas été soumis."
+
+#     if file.filename == '':
+#         return "Le nom du fichier est vide."
+
+#     image_bytes = file.read()
+#     image = Image.open(BytesIO(image_bytes))
+#     image = image.convert("L")
+#     image = image.resize((150, 150))
+#     img_array = np.array(image) / 255
+#     img_array = img_array.reshape(-1, 150, 150, 1)
+#     prediction = model.predict(img_array)
+#     is_pneumonia = "Normal" if prediction > 0.5 else "Pneumonie"
+#     return render_template('index.html', prediction=is_pneumonia)
 
 
 # @app.route('/', methods=['GET', 'POST'])
