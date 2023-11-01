@@ -52,59 +52,6 @@ def predict_pneumonia():
 
 
 
-
-
-# @app.route('/', methods=['POST'])
-# def predict_pneumonia():
-#     if 'file' not in request.files:
-#         return "Aucun fichier n'a été soumis."
-#     file = request.files['file']
-#     if not file:
-#         return "Le fichier n'a pas été soumis."
-
-#     if file.filename == '':
-#         return "Le nom du fichier est vide."
-
-#     image_bytes = file.read()
-#     image = Image.open(BytesIO(image_bytes))
-#     image = image.convert("L")
-#     image = image.resize((150, 150))
-#     img_array = np.array(image) / 255
-#     img_array = img_array.reshape(-1, 150, 150, 1)
-#     prediction = model.predict(img_array)
-#     is_pneumonia = "Normal" if prediction > 0.5 else "Pneumonie"
-#     return render_template('index.html', prediction=is_pneumonia)
-
-
-# @app.route('/', methods=['GET', 'POST'])
-# def predict_pneumonia():
-#     if request.method == 'POST':
-#         if 'file' not in request.files:
-#             return redirect(request.url)
-#         file = request.files['file']
-#         if file.filename == '':
-#             return redirect(request.url)
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#             file.save(file_path)
-
-#             # Charger et prétraiter l'image
-#             img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-#             img = cv2.resize(img, (150, 150))
-#             img = np.array(img) / 255
-#             img = img.reshape(-1, 150, 150, 1)
-
-#             # Faire une prédiction avec le modèle
-#             prediction = model.predict(img)
-#             is_pneumonia = "Normal" if prediction > 0.5 else "Pneumonie"
-
-#             return render_template('index.html', filename=filename, prediction=is_pneumonia)
-
-#     return render_template('index.html')
-#============================================================================
-
-
 @app.route('/', methods=['GET'])
 def index():
     title = 'Test page'
