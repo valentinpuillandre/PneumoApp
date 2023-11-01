@@ -10,9 +10,10 @@ from keras.preprocessing import image
 # Flask utils
 from flask import Flask, redirect, request, render_template
 from werkzeug.utils import secure_filename
-
+from flask_cors import CORS
 # Define a flask app
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['UPLOAD_FOLDER'] = 'static/images'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 
@@ -59,6 +60,7 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
+    
         app.run(debug=True)
     
 #, port=int(os.environ.get("PORT", 8080))

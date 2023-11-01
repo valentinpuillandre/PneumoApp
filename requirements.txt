@@ -6,3 +6,4 @@ Werkzeug
 gunicorn
 opencv-python
 Python-IO
+flask-cors
